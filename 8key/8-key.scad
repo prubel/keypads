@@ -1,0 +1,214 @@
+$fn=50;
+// distance between wells
+wellSpacing = 6;
+
+roundR = 1.5;
+
+keySide = 14;
+
+// the depth of the top "key holder"
+baseDepth = 1;
+topToLip = 4;
+
+rows=2;
+cols=4;
+
+// wall depth for base
+wall = 1.5;
+// heigth of base
+bottomH = 23;
+
+baseW = wellSpacing + cols * (wellSpacing+keySide);
+baseH = wellSpacing + rows * (wellSpacing+keySide);
+module switchHole() {
+ cube ([keySide, keySide, keySide]);
+}
+
+module kBase() {
+    cube([
+        baseW, 
+        baseH,
+        baseDepth
+    ]);
+}
+
+module screwTab() {
+   cylinder(h=baseDepth, d=7);
+}
+
+module screwHole() {
+    cylinder(h=baseDepth, d=3);
+}
+
+
+lip = 8;
+// rounded top 
+module rTop() {
+    translate([0,0,-3]) {
+        hull() {
+            difference() {
+                union() {
+                    
+                    rotate(a=[-90,0,0]) {
+                        translate([2, 0, 2]) {
+                            linear_extrude(height=baseH-4, center=false) {
+                                scale([0.5, 1]) circle(lip);
+                            } 
+                        }
+                        translate([baseW-2, 0, 2]) {
+                            linear_extrude(height=baseH-4, center=false) {
+                                scale([0.5, 1]) circle(lip);
+                            } 
+                        }
+                    }
+                    
+                    rotate(a=[0,90,0]) {
+                        translate([0, 2, 2]) {
+                            linear_extrude(height=baseW-4, center=false) {
+                                scale([1, 0.5]) circle(lip);
+                            } 
+                        }
+                        translate([0, baseH-2, 2]) {
+                            linear_extrude(height=baseW-4, center=false) {
+                                scale([1, 0.5]) circle(lip);
+                            } 
+                        }
+                    }
+                    
+                }
+                // chop off the bottom
+                translate([-0.25*baseW, -0.25*baseH,3-bottomH]) {
+                    cube([1.5*baseW,1.5*baseH,bottomH]);
+                }
+            } //difference
+        } //hull
+        
+    } //translate
+    
+    
+}
+
+module wells() {
+    for (i = [1:1:rows]) {
+        yoff = wellSpacing + ((i-1) * (wellSpacing+keySide));
+        for (j = [1:1:cols]) {
+            xoff = wellSpacing + ((j-1) * (wellSpacing + keySide));
+            translate([xoff, yoff, 0]) {
+                switchHole();
+            }
+        }
+    }
+}
+
+// create the grid to hold the switches
+module top() {
+    difference() {
+        union() {
+            rTop();
+            translate([0.5,0.5,-topToLip+1]) color([1,0,1])cube([baseW-0.5, baseH-0.5, topToLip-1]);
+        }
+        // cut into the rounding, but not all the way to the bottom
+        translate([2*wall, 2*wall, baseDepth]) {
+            cube([baseW-4*wall, baseH-4*wall, bottomH]);
+        }
+        translate([0, 0, -3]) {
+            color([0.25,0.25,0]) wells();
+        }
+    }    
+    
+}
+
+
+// studs will hold a pico pi
+module picoSupport() {
+    h = 8;
+    union() {
+        color([0,1,0]) {
+            difference (){
+                cube([10, 15, h]); //base-front
+                translate([3,1.5,0]) {
+                    translate([0, 0, 0]) cylinder(h=10, d=2);
+                    translate([0, 11.5, 0]) cylinder(h=10, d=2);
+                }
+            }
+            translate([45,0,0]) cube([14, 15, h]); //base-back
+            translate([50,1.5,h]) {
+                translate([0, 0, 0]) cylinder(h=5, d=2);
+                translate([0, 11.5, 0]) cylinder(h=5, d=2);
+                translate([3,1,0])  cube([5,10,5]); //backstop
+            }
+        }
+    }
+}
+
+module rounded_box(x, y, z, radius){
+    hull(){
+        for (i = [0, x]) {
+            for (j = [0, y]) {
+                translate([i, j, 0]) {
+                    cylinder(r=radius, h=z);
+                }
+            }
+        }
+    }
+}
+module bottom() {
+    color([1,0,0]) {
+            difference () {
+                rounded_box(baseW+2*wall, baseH+2*wall, bottomH, roundR);
+                //cube([baseW+2*wall, baseH+2*wall, bottomH]);
+                
+                //center all inside lip
+                translate([wall+2,wall+2, wall]) {
+                    cube([baseW-topToLip, baseH-topToLip, bottomH]);
+                }
+                // twice for a lip:
+                // below the lip
+                translate([wall,wall, wall]) {
+                    cube([baseW, baseH, bottomH]);
+                }
+            }
+        }
+        // support studs
+    }    
+
+
+module main() {
+    debug = false;
+    //top();
+    difference() {
+        translate([-wall,60, 0]) {
+            difference() {
+                bottom();
+                // make a hole for the usb plub
+                translate([-10, wall+13, 5*wall]) {
+                    cube([13, 19, 10]);
+                }
+            }
+        }
+    
+        if (debug) {         // cut off a bunch
+            translate([-50,50,-1]) {
+                cube([200,20,30]);
+            }
+            translate([-50,100,-1]) {
+                cube([200,20,30]);
+            }
+            translate([70,40,-1]) {
+                cube([20,100,30]);
+            }    
+        }
+    }
+    
+    translate([2.5, 75+wall, 0]) {//-wall, -wall, 25]) {            
+        picoSupport();
+    }
+
+
+
+}
+
+
+main();
+top();
+
