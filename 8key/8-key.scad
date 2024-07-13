@@ -48,7 +48,13 @@ module rTop() {
         hull() {
             difference() {
                 union() {
+                    // round out the edge
+                    translate([2.5,2.5,3]) rotate([0,0, -45]) scale([0.7,1])sphere(5);
+                    translate([baseW-2.5, 2.5,3]) rotate([0,0, 45]) scale([0.7,1])sphere(5);
+                    translate([baseW-2.5,baseH-2.5, ,3]) rotate([0,0, -45]) scale([0.7,1])sphere(5);
+                    translate([2.5,baseH-2.5,3]) rotate([0,0, 45]) scale([0.7,1])sphere(5);
                     
+                        // one set of parallel tubes
                     rotate(a=[-90,0,0]) {
                         translate([2, 0, 2]) {
                             linear_extrude(height=baseH-4, center=false) {
@@ -62,6 +68,8 @@ module rTop() {
                         }
                     }
                     
+                    
+                    // other set of parallel tubes
                     rotate(a=[0,90,0]) {
                         translate([0, 2, 2]) {
                             linear_extrude(height=baseW-4, center=false) {
@@ -73,9 +81,8 @@ module rTop() {
                                 scale([1, 0.5]) circle(lip);
                             } 
                         }
-                    }
-                    
-                }
+                    }   
+                } // end union
                 // chop off the bottom
                 translate([-0.25*baseW, -0.25*baseH,3-bottomH]) {
                     cube([1.5*baseW,1.5*baseH,bottomH]);
@@ -88,6 +95,8 @@ module rTop() {
     
 }
 
+// cubes laid on in the correct grid, used in a difference to make 
+// space for the switches
 module wells() {
     for (i = [1:1:rows]) {
         yoff = wellSpacing + ((i-1) * (wellSpacing+keySide));
@@ -108,7 +117,8 @@ module top() {
             translate([0.5,0.5,-topToLip+1]) color([1,0,1])cube([baseW-0.5, baseH-0.5, topToLip-1]);
         }
         // cut into the rounding, but not all the way to the bottom
-        translate([2*wall, 2*wall, baseDepth]) {
+        //translate([2*wall, 2*wall, baseDepth]) {
+        translate([2*wall, 2*wall, -1]) {
             cube([baseW-4*wall, baseH-4*wall, bottomH]);
         }
         translate([0, 0, -3]) {
@@ -119,7 +129,7 @@ module top() {
 }
 
 
-// studs will hold a pico pi
+// studs and holes for scres or posts thatwill hold a pico pi
 module picoSupport() {
     h = 8;
     union() {
@@ -141,6 +151,7 @@ module picoSupport() {
     }
 }
 
+// create a box without sharp edges, the main portion of bottom
 module rounded_box(x, y, z, radius){
     hull(){
         for (i = [0, x]) {
@@ -152,6 +163,8 @@ module rounded_box(x, y, z, radius){
         }
     }
 }
+
+// the base of main
 module bottom() {
     color([1,0,0]) {
             difference () {
@@ -173,6 +186,7 @@ module bottom() {
     }    
 
 
+// Create the bottom container, on which the top() will be placed
 module main() {
     debug = false;
     //top();
@@ -209,6 +223,7 @@ module main() {
 }
 
 
-main();
+//main();
 top();
+//rTop();
 
