@@ -189,41 +189,24 @@ module bottom() {
 // Create the bottom container, on which the top() will be placed
 module main() {
     debug = false;
-    //top();
     difference() {
-        translate([-wall,60, 0]) {
             difference() {
                 bottom();
                 // make a hole for the usb plub
                 translate([-10, wall+13, 5*wall]) {
                     cube([13, 19, 10]);
                 }
-            }
-        }
-    
-        if (debug) {         // cut off a bunch
-            translate([-50,50,-1]) {
-                cube([200,20,30]);
-            }
-            translate([-50,100,-1]) {
-                cube([200,20,30]);
-            }
-            translate([70,40,-1]) {
-                cube([20,100,30]);
-            }    
-        }
+            }        
     }
     
-    translate([2.5, 75+wall, 0]) {//-wall, -wall, 25]) {            
+    translate([2.5-wall, 15+wall, 0]) {
         picoSupport();
     }
-
-
-
 }
 
 
-//main();
-top();
-//rTop();
+main();
+translate([0, 70, 0]) {
+    top();
+}
 
