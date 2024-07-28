@@ -42,17 +42,17 @@ module screwHole() {
 
 
 lip = 8;
+offS = 1;
 // rounded top 
 module rTop() {
-    translate([0,0,-3]) {
         hull() {
             difference() {
                 union() {
                     // round out the edge
-                    translate([2.5,2.5,3]) rotate([0,0, -45]) scale([0.7,1])sphere(5);
-                    translate([baseW-2.5, 2.5,3]) rotate([0,0, 45]) scale([0.7,1])sphere(5);
-                    translate([baseW-2.5,baseH-2.5, ,3]) rotate([0,0, -45]) scale([0.7,1])sphere(5);
-                    translate([2.5,baseH-2.5,3]) rotate([0,0, 45]) scale([0.7,1])sphere(5);
+                    translate([offS,offS,3]) rotate([0,0, -45]) scale([0.7,1])sphere(5);
+                    translate([baseW-offS, offS, 3]) rotate([0,0, 45]) scale([0.7,1])sphere(5);
+                    translate([baseW-offS,baseH-offS, ,3]) rotate([0,0, -45]) scale([0.7,1])sphere(5);
+                    translate([offS, baseH-offS,3]) rotate([0,0, 45]) scale([0.7,1])sphere(5);
                     
                         // one set of parallel tubes
                     rotate(a=[-90,0,0]) {
@@ -89,8 +89,6 @@ module rTop() {
                 }
             } //difference
         } //hull
-        
-    } //translate
     
     
 }
@@ -114,11 +112,11 @@ module top() {
     difference() {
         union() {
             rTop();
-            translate([0.5,0.5,-topToLip+1]) color([1,0,1])cube([baseW-0.5, baseH-0.5, topToLip-1]);
+            translate([0.5,0.5,0]) color([1,0,1])cube([baseW-0.5, baseH-0.5, topToLip-1]);
         }
         // cut into the rounding, but not all the way to the bottom
         //translate([2*wall, 2*wall, baseDepth]) {
-        translate([2*wall, 2*wall, -1]) {
+        translate([2*wall, 2*wall, 2]) {
             cube([baseW-4*wall, baseH-4*wall, bottomH]);
         }
         translate([0, 0, -3]) {
@@ -204,8 +202,10 @@ module main() {
     }
 }
 
-
-main();
+//difference() { 
+//main();
+    //translate([-5,-5,-5]) cube([100,60,23]);
+//}
 translate([0, 70, 0]) {
     top();
 }
