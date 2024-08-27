@@ -1,5 +1,7 @@
 # keypads
-openscad for 3d-printed keypads
+
+[openscad](https://openscad.org/) files for generating 3d-printed keypads
+along with [kmk](https://github.com/KMKfw/kmk_firmware) firmware files.
 
 
 # 8key
