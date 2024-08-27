@@ -203,7 +203,7 @@ module main() {
 }
 
 //difference() { 
-//main();
+main();
     //translate([-5,-5,-5]) cube([100,60,23]);
 //}
 translate([0, 70, 0]) {
